@@ -1,0 +1,277 @@
+# Default Configuration for Ecommerce Product Detection
+# This is the base configuration used across all environments
+
+# Application Settings
+app:
+  name: ecommerce-product-detection
+  version: 0.1.0
+  description: Computer vision system for automated product detection in ecommerce images
+  author: emansahn
+  debug: false
+  log_level: INFO
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Image Processing Configuration
+image:
+  # Input image size for model
+  size: 640
+  # Maximum image size to load
+  max_size: 2048
+  # Minimum image size
+  min_size: 320
+  # Normalize images
+  normalize: true
+  # Normalization mean (BGR)
+  mean: [103.53, 116.28, 123.675]
+  # Normalization std (BGR)
+  std: [57.375, 57.12, 58.395]
+  # Image quality check
+  quality_check: true
+  # Minimum image quality score (0-100)
+  min_quality: 30
+
+# Model Configuration
+model:
+  # Detection model architecture
+  detection:
+    name: yolov8m
+    # Model path (relative to project root)
+    path: models/weights/yolov8m.pt
+    # Pre-trained weights
+    pretrained: true
+    # Input size
+    input_size: 640
+    # Number of classes
+    num_classes: 10
+
+  # Classification model (optional)
+  classification:
+    enabled: true
+    name: resnet50
+    path: models/weights/classifier.pt
+    num_classes: 10
+
+# Detection Parameters
+detection:
+  # Confidence threshold for detections
+  confidence_threshold: 0.5
+  # IoU threshold for NMS
+  iou_threshold: 0.45
+  # Maximum detections per image
+  max_detections: 100
+  # Device to use (cuda, cpu, auto)
+  device: auto
+  # Number of workers for data loading
+  num_workers: 4
+  # Batch size for inference
+  batch_size: 32
+
+# Augmentation Configuration
+augmentation:
+  # Enable augmentation
+  enabled: true
+  # Type: light, moderate, strong, extreme
+  level: moderate
+  # Probability of applying each augmentation (0-1)
+  probability: 0.5
+  # Specific augmentations
+  augmentations:
+    rotate:
+      enabled: true
+      angle_range: [-15, 15]
+    flip:
+      enabled: true
+      horizontal: true
+      vertical: false
+    brightness:
+      enabled: true
+      factor_range: [0.8, 1.2]
+    contrast:
+      enabled: true
+      factor_range: [0.8, 1.2]
+    blur:
+      enabled: true
+      kernel_size: [3, 5]
+    noise:
+      enabled: true
+      std_range: [5, 15]
+    saturation:
+      enabled: false
+      factor_range: [0.8, 1.2]
+    perspective:
+      enabled: false
+      strength: 0.1
+
+# Training Configuration
+training:
+  # Number of training epochs
+  epochs: 100
+  # Batch size for training
+  batch_size: 16
+  # Learning rate
+  learning_rate: 0.001
+  # Learning rate scheduler
+  lr_scheduler: cosine
+  # Optimizer (adam, sgd)
+  optimizer: adam
+  # Weight decay (L2 regularization)
+  weight_decay: 0.0005
+  # Momentum (for SGD)
+  momentum: 0.937
+  # Early stopping patience
+  patience: 20
+  # Gradient clipping
+  clip_grad_norm: 1.0
+  # Save checkpoint every N epochs
+  save_period: 10
+  # Validation frequency (every N epochs)
+  val_frequency: 1
+  # Warmup epochs
+  warmup_epochs: 5
+  # Warmup momentum
+  warmup_momentum: 0.8
+
+# Validation Configuration
+validation:
+  # Validation batch size
+  batch_size: 32
+  # Validation frequency
+  frequency: 1
+  # Metrics to compute
+  metrics:
+    - mAP
+    - precision
+    - recall
+    - f1_score
+  # Confidence threshold for evaluation
+  conf_threshold: 0.5
+  # IoU threshold for evaluation
+  iou_threshold: 0.5
+
+# Data Configuration
+data:
+  # Dataset directory
+  dataset_dir: data
+  # Train data path
+  train_path: data/splits/train
+  # Validation data path
+  val_path: data/splits/val
+  # Test data path
+  test_path: data/splits/test
+  # Annotations format (yolo, coco)
+  annotation_format: yolo
+  # Number of workers for data loading
+  num_workers: 4
+  # Pin memory for GPU
+  pin_memory: true
+  # Prefetch factor
+  prefetch_factor: 2
+
+# Database Configuration (Optional)
+database:
+  # Enable database
+  enabled: false
+  # Database type (postgresql, mysql, sqlite)
+  type: postgresql
+  # Database URL
+  url: postgresql://user:password@localhost:5432/product_detection
+  # Echo SQL queries
+  echo: false
+  # Connection pool size
+  pool_size: 10
+  # Max overflow
+  max_overflow: 20
+
+# API Configuration
+api:
+  # API host
+  host: 0.0.0.0
+  # API port
+  port: 8000
+  # Number of workers
+  workers: 4
+  # Auto-reload on code changes
+  reload: false
+  # API prefix
+  prefix: /api/v1
+  # CORS origins
+  cors_origins:
+    - "*"
+  # Request timeout (seconds)
+  request_timeout: 30
+  # Max content size (MB)
+  max_content_size: 100
+
+# Logging Configuration
+logging:
+  # Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  level: INFO
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # Log file path
+  file: logs/app.log
+  # Log file max size (MB)
+  max_size: 10
+  # Number of backup logs to keep
+  backup_count: 5
+  # Console output
+  console: true
+
+# Monitoring Configuration
+monitoring:
+  # Enable monitoring
+  enabled: false
+  # Sentry DSN for error tracking
+  sentry_dsn: ""
+  # Metrics collection
+  metrics_enabled: true
+  # Metrics export interval (seconds)
+  metrics_interval: 60
+
+# Cache Configuration
+cache:
+  # Enable caching
+  enabled: true
+  # Cache backend (redis, memory)
+  backend: memory
+  # Redis URL (if using Redis)
+  redis_url: redis://localhost:6379/0
+  # Cache TTL (seconds)
+  ttl: 3600
+  # Max cache size
+  max_size: 1000
+
+# Output Configuration
+output:
+  # Save directory
+  save_dir: results
+  # Save format (json, csv)
+  format: json
+  # Save predictions
+  save_predictions: true
+  # Save visualizations
+  save_visualizations: false
+  # Visualization format (jpg, png)
+  viz_format: jpg
+  # Visualization quality (1-100)
+  viz_quality: 95
+
+# Random Seed (for reproducibility)
+random_seed: 42
+
+# Project Paths
+paths:
+  # Project root
+  root: ./
+  # Data directory
+  data: data
+  # Models directory
+  models: models
+  # Scripts directory
+  scripts: scripts
+  # Configuration directory
+  config: config
+  # Logs directory
+  logs: logs
+  # Results directory
+  results: results

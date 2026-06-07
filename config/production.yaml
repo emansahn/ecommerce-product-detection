@@ -1,0 +1,200 @@
+# Production Configuration
+# Optimized for performance, reliability, and scalability
+
+# Application Settings (Production)
+app:
+  debug: false
+  log_level: INFO
+
+# Image Processing (Production)
+image:
+  # Optimized image size for accuracy
+  size: 640
+  max_size: 2048
+  min_size: 320
+  normalize: true
+  quality_check: true
+  min_quality: 50  # Higher quality threshold in production
+
+# Model Configuration (Production)
+model:
+  detection:
+    # Use larger model for better accuracy
+    name: yolov8l
+    path: models/weights/yolov8l.pt
+    pretrained: true
+    input_size: 640
+    num_classes: 10
+
+  classification:
+    enabled: true
+    name: resnet50
+    path: models/weights/classifier.pt
+    num_classes: 10
+
+# Detection Parameters (Production)
+detection:
+  # Higher confidence threshold for production
+  confidence_threshold: 0.6
+  iou_threshold: 0.45
+  max_detections: 100
+  device: cuda  # Use GPU
+  num_workers: 8  # More workers for better throughput
+  batch_size: 64  # Larger batch for better throughput
+
+# Augmentation Configuration (Production)
+augmentation:
+  # Disable augmentation in production (only use in training)
+  enabled: false
+  level: strong
+
+# Training Configuration (Production)
+training:
+  # Production training parameters
+  epochs: 300  # More epochs for better model
+  batch_size: 32
+  learning_rate: 0.001
+  lr_scheduler: cosine
+  optimizer: adam
+  weight_decay: 0.0005
+  patience: 50  # Higher patience for convergence
+  save_period: 10
+  val_frequency: 1
+  warmup_epochs: 10
+
+# Validation Configuration (Production)
+validation:
+  batch_size: 64
+  frequency: 1
+  metrics:
+    - mAP
+    - precision
+    - recall
+    - f1_score
+  conf_threshold: 0.6
+  iou_threshold: 0.5
+
+# Data Configuration (Production)
+data:
+  dataset_dir: /mnt/data/ecommerce  # Use absolute path
+  train_path: /mnt/data/ecommerce/splits/train
+  val_path: /mnt/data/ecommerce/splits/val
+  test_path: /mnt/data/ecommerce/splits/test
+  annotation_format: yolo
+  num_workers: 8  # More workers
+  pin_memory: true
+  prefetch_factor: 4
+
+# Database Configuration (Production)
+database:
+  enabled: true
+  type: postgresql
+  # Use environment variable for connection URL
+  url: ${DATABASE_URL}
+  echo: false  # Don't print SQL
+  pool_size: 20  # Larger connection pool
+  max_overflow: 40
+  # Connection timeout
+  connect_timeout: 5
+  # Connection pool recycle
+  pool_recycle: 3600
+
+# API Configuration (Production)
+api:
+  host: 0.0.0.0
+  port: 8000
+  workers: 8  # Multiple workers for concurrency
+  reload: false  # Never reload in production
+  prefix: /api/v1
+  # Restricted CORS origins
+  cors_origins:
+    - "https://example.com"
+    - "https://www.example.com"
+  request_timeout: 30
+  max_content_size: 100
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: 60
+  # Request validation
+  validate_requests: true
+
+# Logging Configuration (Production)
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: /var/log/ecommerce-detection/app.log
+  max_size: 100  # 100 MB per log file
+  backup_count: 10  # Keep 10 backup files
+  console: true
+  # JSON logging for ELK stack
+  json_logging: true
+
+# Monitoring Configuration (Production)
+monitoring:
+  enabled: true
+  # Sentry for error tracking
+  sentry_dsn: ${SENTRY_DSN}
+  # Metrics collection for monitoring
+  metrics_enabled: true
+  metrics_interval: 60
+  # Prometheus metrics
+  prometheus_enabled: true
+  prometheus_port: 9090
+
+# Cache Configuration (Production)
+cache:
+  enabled: true
+  backend: redis  # Use Redis for distributed cache
+  redis_url: ${REDIS_URL}  # Use environment variable
+  ttl: 3600
+  max_size: 10000  # Large cache size
+  # Cache clustering
+  cluster_enabled: true
+
+# Output Configuration (Production)
+output:
+  save_dir: /mnt/results/ecommerce
+  format: json
+  save_predictions: true
+  save_visualizations: false  # Don't save visualizations in production
+  viz_format: jpg
+  viz_quality: 95
+  # S3 upload for results
+  s3_enabled: true
+  s3_bucket: ecommerce-detection-results
+  s3_prefix: predictions/
+
+# Random Seed
+random_seed: 42
+
+# Production-Specific Settings
+production:
+  # Environment name
+  environment: production
+  # Health check endpoint
+  health_check_enabled: true
+  # Graceful shutdown timeout (seconds)
+  shutdown_timeout: 30
+  # Resource limits
+  max_memory_mb: 16000
+  max_cpu_percent: 80
+  # Backup configuration
+  backup_enabled: true
+  backup_interval: 86400  # Daily backup
+  backup_dir: /mnt/backups/
+  # SSL/TLS configuration
+  ssl_enabled: true
+  ssl_cert_path: /etc/ssl/certs/cert.pem
+  ssl_key_path: /etc/ssl/private/key.pem
+  # Authentication
+  auth_enabled: true
+  auth_type: oauth2  # oauth2, jwt, api_key
+  # API versioning
+  api_version: v1
+  # Feature flags
+  feature_flags:
+    batch_processing: true
+    async_inference: true
+    result_caching: true
+    metrics_export: true

@@ -1,0 +1,127 @@
+# Development Configuration
+# Extends default configuration with development-specific settings
+
+# Import base configuration
+# Note: This would require a config loader that supports inheritance
+
+# Application Settings (Development Override)
+app:
+  debug: true
+  log_level: DEBUG
+
+# Image Processing (Development)
+image:
+  # Use smaller images for faster development iteration
+  size: 416
+  max_size: 1024
+  min_size: 256
+
+# Model Configuration (Development)
+model:
+  detection:
+    # Use smaller model for faster training
+    name: yolov8s
+    path: models/weights/yolov8s.pt
+
+# Detection Parameters (Development)
+detection:
+  # Lower confidence threshold to see more detections
+  confidence_threshold: 0.3
+  device: cuda  # Use GPU if available
+  num_workers: 2
+  batch_size: 8  # Smaller batch for development
+
+# Augmentation Configuration (Development)
+augmentation:
+  enabled: true
+  level: moderate  # Medium augmentation for development
+  probability: 0.5
+
+# Training Configuration (Development)
+training:
+  epochs: 10  # Fewer epochs for quick iteration
+  batch_size: 8  # Smaller batch
+  learning_rate: 0.001
+  optimizer: adam
+  patience: 5  # Early stopping with lower patience
+  save_period: 2  # Save more frequently
+  val_frequency: 1
+  warmup_epochs: 1
+
+# Validation Configuration (Development)
+validation:
+  batch_size: 8
+  frequency: 1
+  conf_threshold: 0.3
+
+# Data Configuration (Development)
+data:
+  dataset_dir: data
+  train_path: data/splits/train
+  val_path: data/splits/val
+  test_path: data/splits/test
+  num_workers: 2  # Fewer workers
+  pin_memory: false  # Less memory-intensive
+
+# Database Configuration (Development)
+database:
+  enabled: false  # Disabled in development
+  type: sqlite  # Use SQLite for development
+  url: sqlite:///./product_detection.db
+  echo: true  # Print SQL queries
+
+# API Configuration (Development)
+api:
+  host: 127.0.0.1
+  port: 8000
+  workers: 1  # Single worker for development
+  reload: true  # Auto-reload on code changes
+  request_timeout: 60
+
+# Logging Configuration (Development)
+logging:
+  level: DEBUG
+  file: logs/development.log
+  max_size: 5
+  backup_count: 3
+  console: true
+
+# Monitoring Configuration (Development)
+monitoring:
+  enabled: false  # Disabled in development
+  metrics_enabled: true
+  metrics_interval: 30
+
+# Cache Configuration (Development)
+cache:
+  enabled: true
+  backend: memory  # Use in-memory cache
+  ttl: 600  # Shorter TTL for development
+  max_size: 500
+
+# Output Configuration (Development)
+output:
+  save_dir: results/development
+  save_predictions: true
+  save_visualizations: true  # Save visualizations in development
+  viz_format: png
+  viz_quality: 85
+
+# Random Seed
+random_seed: 42
+
+# Development-Specific Settings
+development:
+  # Enable verbose output
+  verbose: true
+  # Keep temporary files
+  keep_temp_files: true
+  # Profile code execution
+  profiling_enabled: false
+  # Sample dataset (use subset for faster iteration)
+  use_sample_data: false
+  sample_size: 100  # Number of samples to use
+  # Test mode (use test set instead of real data)
+  test_mode: false
+  # Show progress bars
+  show_progress: true
